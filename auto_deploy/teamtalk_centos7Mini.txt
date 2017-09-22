@@ -1,0 +1,49 @@
+1.安装软件
+sudo yum install gcc
+sudo yum install gcc-c++
+sudo yum install gdb
+sudo yum install libtermcap-devel
+sudo yum install autoconf 
+sudo yum install automake 
+sudo yum install binutils 
+sudo yum install bison 
+sudo yum install bzip2 
+sudo yum install cmake 
+sudo yum install diffutils
+sudo yum install wget
+sudo yum install git
+sudo yum install nano
+sudo yum install curl-devel
+sudo yum install zlib zlib-devel openssl openssl-devel pcre pcre-devel
+sudo yum install psmisc
+sudo yum install libxml2
+sudo yum install libxml2-devel
+
+2.安装jdk
+rpm -ivh jdk-8u121-linux-x64.rpm (JAVA_HOME=/usr/java/jdk1.8.0_121/)
+export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_121
+export PATH=$JAVA_HOME/bin:$PATH
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+3.开始安装
+chmod a+x *.sh
+sudo ./pre.sh 192.168.0.88
+sudo ./setup.sh install
+sudo netstat -ntlp
+mysql root root_Of56c
+4.配置防火墙
+CentOS 7.x开放端口
+# zone=public 目标区域，此处指定公共域
+# add-port=80/tcp 端口/协议
+# permanent 永久生效
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+# 重启防火墙
+firewall-cmd --reload
+firewall-cmd --state
+firewall-cmd --list-all
+sudo systemctl stop firewalld.service 
+sudo systemctl disable firewalld.service 
+
+关闭  
+sudo sed -i 's/=enforcing/=disabled/g' /etc/selinux/config
+cat /etc/selinux/config 
+

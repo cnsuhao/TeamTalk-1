@@ -1,0 +1,95 @@
+sudo rpm -e mariadb-libs-5.5.52-1.el7.x86_64
+sudo rpm -e --nodeps mariadb-libs-5.5.52-1.el7.x86_64 
+
+sudo rpm -qa|grep mariadb
+sudo rpm -qa|grep mysql
+
+sudo yum -y remove mysql
+sudo rm -rf /var/lib/mysql
+sudo rm /etc/my.cnf
+
+以下操作会生成yum Repository源 /etc/yum.repos.d/mysql-community.repo，/etc/yum.repos.d/mysql-community-source.repo
+
+sudo yum localinstall -y mysql57-community-release-el7-7.noarch.rpm
+sudo yum install -y mysql-community-server
+或者自己本地安装
+    sudo rpm -qa|grep mariadb
+    sudo rpm -qa|grep mysql
+
+    sudo yum localinstall mysql57-community-release-el7-7.noarch.rpm
+    sudo yum localinstall mysql-community-common-5.7.18-1.el7.x86_64.rpm 
+    sudo yum localinstall mysql-community-libs-5.7.18-1.el7.x86_64.rpm
+    sudo yum localinstall mysql-community-devel-5.7.18-1.el7.x86_64.rpm
+    sudo yum localinstall mysql-community-client-5.7.18-1.el7.x86_64.rpm
+    sudo yum localinstall mysql-community-embedded-5.7.18-1.el7.x86_64.rpm
+    sudo yum localinstall mysql-community-embedded-devel-5.7.18-1.el7.x86_64.rpm
+    sudo yum localinstall mysql-community-server-5.7.18-1.el7.x86_64.rpm
+    sudo yum localinstall mysql-community-libs-compat-5.7.18-1.el7.x86_64.rpm
+    
+
+sudo systemctl enable  mysqld.service
+sudo systemctl start  mysqld.service
+sudo systemctl status mysqld.service
+sudo service mysqld start
+sudo service mysqld status
+
+重置密码
+sudo grep "password" /var/log/mysqld.log 
+sudo grep 'temporary password' /var/log/mysqld.log
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'root_Of56c';
+  
+允许远程登录 
+grant all privileges on *.* to root@'%'identified by 'root_Of56c' WITH GRANT OPTION; ;
+flush privileges;
+
+其实想要重置 5.7 的密码很简单，就一层窗户纸：
+1、修改 /etc/my.cnf，在 [mysqld] 小节下添加一行：skip-grant-tables=1
+这一行配置让 mysqld 启动时不对密码进行验证
+2、重启 mysqld 服务：systemctl restart mysqld
+3、使用 root 用户登录到 mysql：mysql -u root 
+4、切换到mysql数据库，更新 user 表：
+use mysql; 
+update user set authentication_string = password('root_Of56c'), password_expired = 'N', password_last_changed = now() where user = 'root';
+flush privileges;
+在之前的版本中，密码字段的字段名是 password，5.7版本改为了 authentication_string
+5、退出 mysql，编辑 /etc/my.cnf 文件，删除 skip-grant-tables=1 的内容
+6、重启 mysqld 服务，再用新密码登录即可
+  
+
+(1/8): mysql-community-common-5.7.18-1.el7.x86_64.rpm                                                                                                                                     | 271 kB  00:00:05     
+(2/8): mysql-community-devel-5.7.18-1.el7.x86_64.rpm                                                                                                                                      | 3.6 MB  00:01:31     
+(3/8): mysql-community-client-5.7.18-1.el7.x86_64.rpm                                                                                                                                     |  24 MB  00:01:52     
+(4/8): mysql-community-embedded-devel-5.7.18-1.el7.x86_64.rpm                                                                                                                             | 120 MB  00:08:47     
+(5/8): mysql-community-libs-5.7.18-1.el7.x86_64.rpm                                                                                                                                       | 2.1 MB  00:00:12     
+(6/8): mysql-community-libs-compat-5.7.18-1.el7.x86_64.rpm                                                                                                                                | 2.0 MB  00:00:12     
+(7/8): mysql-community-embedded-5.7.18-1.el7.x86_64.rpm                                                                                                                                   |  43 MB  00:13:46     
+(8/8): mysql-community-server-5.7.18-1.el7.x86_64.rpm                                                                                                                                     | 162 MB  00:20:31  
+
+
+Installing : mysql-community-common-5.7.18-1.el7.x86_64.rpm                                                                                                                                                   1/12 
+Installing : mysql-community-libs-5.7.18-1.el7.x86_64.rpm                                                                                                                                                     2/12 
+Installing : mysql-community-devel-5.7.18-1.el7.x86_64.rpm                                                                                                                                                    3/12 
+Installing : mysql-community-client-5.7.18-1.el7.x86_64.rpm                                                                                                                                                   4/12 
+Installing : mysql-community-embedded-5.7.18-1.el7.x86_64.rpm                                                                                                                                                 5/12 
+Installing : mysql-community-embedded-devel-5.7.18-1.el7.x86_64.rpm                                                                                                                                           6/12 
+Installing : mysql-community-server-5.7.18-1.el7.x86_64.rpm                                                                                                                                                   7/12 
+Installing : mysql-community-libs-compat-5.7.18-1.el7.x86_64.rpm                                                                                                                                              8/12 
+Erasing    : 1:mariadb-embedded-devel-5.5.52-1.el7.x86_64.rpm                                                                                                                                                 9/12 
+Erasing    : 1:mariadb-devel-5.5.52-1.el7.x86_64                                                                                                                                                         10/12 
+Erasing    : 1:mariadb-libs-5.5.52-1.el7.x86_64                                                                                                                                                          11/12 
+Erasing    : 1:mariadb-embedded-5.5.52-1.el7.x86_64                                                                                                                                                      12/12 
+
+
+以下操作让所有远程机器都可以访问mysql
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root_Of56c' WITH  GRANT OPTION;
+FLUSH PRIVILEGES; 
+
+导数据
+LOAD DATA INFILE '/var/lib/mysql-files/user_report_info_20170514_data.txt'  
+INTO TABLE user_report_info_20160530 
+CHARACTER SET utf8  
+IGNORE 1 LINES ;
+
+
+
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'

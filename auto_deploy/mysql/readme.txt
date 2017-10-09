@@ -1,4 +1,4 @@
-sudo rpm -e mariadb-libs-5.5.52-1.el7.x86_64
+﻿sudo rpm -e mariadb-libs-5.5.52-1.el7.x86_64
 sudo rpm -e --nodeps mariadb-libs-5.5.52-1.el7.x86_64 
 
 sudo rpm -qa|grep mariadb
@@ -93,3 +93,7 @@ IGNORE 1 LINES ;
 
 
 FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+
+
+ ln -s libmysqlclient.so.20.0.0 libmysqlclient_r.so
+ yum install mysql-devel

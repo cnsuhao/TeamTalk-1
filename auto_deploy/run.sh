@@ -47,24 +47,7 @@ run_redis() {
 	fi
 
 	$REDIS_SERVER_PATH/$REDIS_SERVER $REDIS_CONF_PATH/$REDIS_CONF
-}
- 
-run_mysql() {
-    systemctl stop mysqld.service
-    systemctl start mysqld.service
-}
-
-run_nginx() {
-     systemctl stop nginx.service
-     systemctl start nginx.service
-     #killall nginx
-     #/usr/local/nginx/nginx
-}
-
-run_php5() {
-    killall php-fpm
-    /usr/local/php5/sbin/php-fpm
-}
+} 
 
 run_db_proxy_server() {
         cd $CRU_DIR
@@ -78,11 +61,8 @@ run_db_proxy_server() {
            restart_a  db_proxy_server
 	fi
 }
-
-run_mysql
-run_redis
-run_php5
-run_nginx
+ 
+run_redis  
 
 cd $CRU_DIR
 restart_a  login_server

@@ -6,10 +6,8 @@
 # setup TeamTalk
 
 REDIS=redis
-MYSQL=mysql
-NGINX_PHP=nginx_php
-NGINX=nginx
-PHP=php
+MYSQL=mysql 
+NGINX=nginx 
 
 IM_WEB=im_web
 IM_SERVER=im_server
@@ -23,8 +21,6 @@ MYSQL_SETUP_BEGIN=0
 MYSQL_SETUP_SUCCESS=0
 NGINX_SETUP_BEGIN=0
 NGINX_SETUP_SUCCESS=0
-PHP_SETUP_BEGIN=0
-PHP_SETUP_SUCCESS=0
 IM_WEB_SETUP_BEGIN=0
 IM_WEB_SETUP_SUCCESS=0
 IM_SERVER_SETUP_BEGIN=0
@@ -149,12 +145,6 @@ get_setup_process() {
 				"$NGINX success")
 					NGINX_SETUP_SUCCESS=1
 					;;
-				"$PHP start")
-					PHP_SETUP_BEGIN=1
-					;;
-				"$PHP success")
-					PHP_SETUP_SUCCESS=1
-					;;
 				"$IM_WEB start")
 					IM_WEB_SETUP_BEGIN=1
 					;;
@@ -225,7 +215,6 @@ build_mysql() {
 }
 
 check_nginx() {
-	cd $NGINX_PHP
 	cd $NGINX
 	chmod +x setup.sh
 	./setup.sh check
@@ -236,21 +225,7 @@ check_nginx() {
 	fi
 }
 
-check_php() {
-	cd $NGINX_PHP
-	cd $PHP
-	chmod +x setup.sh
-	./setup.sh check
-	if [ $? -eq 0 ]; then
-		cd $CUR_DIR
-	else
-		return 1
-	fi
-}
-
-build_nginx() {
-    cd $NGINX_PHP
-
+build_nginx() { 
     cd $NGINX
     chmod +x setup.sh
     setup_begin $NGINX
@@ -261,22 +236,6 @@ build_nginx() {
     else
         return 1
     fi
-}
-
-
-build_php() {
-	cd $NGINX_PHP
-
-	cd $PHP
-	chmod +x setup.sh
-	setup_begin $PHP
-	./setup.sh install
-	if [ $? -eq 0 ]; then
-		setup_success $PHP
-		cd $CUR_DIR
-	else
-		return 1
-	fi
 }
 
 check_im_web() {
@@ -398,13 +357,7 @@ check_all() {
 	check_module $NGINX $NGINX_SETUP_BEGIN $NGINX_SETUP_SUCCESS
 	if [ $? -eq 1 ]; then
 		exit 1
-	fi
-	
-	#php
-	check_module $PHP $PHP_SETUP_BEGIN $PHP_SETUP_SUCCESS
-	if [ $? -eq 1 ]; then
-		exit 1
-	fi
+	fi 
 
 	#im_web
     check_module $IM_WEB $IM_WEB_SETUP_BEGIN $IM_WEB_SETUP_SUCCESS
@@ -477,13 +430,7 @@ build_all() {
 	if [ $? -eq 1 ]; then
 		exit 1
 	fi
-
-	#php
-	build_module $PHP $PHP_SETUP_BEGIN $PHP_SETUP_SUCCESS
-	if [ $? -eq 1 ]; then
-		exit 1
-	fi
-
+ 
 	#im_web
     build_module $IM_WEB $IM_WEB_SETUP_BEGIN $IM_WEB_SETUP_SUCCESS
     if [ $? -eq 1 ]; then

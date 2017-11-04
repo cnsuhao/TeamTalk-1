@@ -74,3 +74,8 @@
 ###IM_SERVER与IM_DB_PROXY架构图如下:
 
 ![](https://raw.githubusercontent.com/mogutt/TTServer/master/docs/pics/server.jpg)
+
+1.自己手动安装好mysql,nginx
+2.执行setup.sh
+3.执行reset_ip.sh 0.0.0.0 192.168.0.81
+4.执行run.sh 
